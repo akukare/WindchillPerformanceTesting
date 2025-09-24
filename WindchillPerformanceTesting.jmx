@@ -1,0 +1,3064 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Windchill Performance Testing">
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config">
+        <stringProp name="filename">C:/Users/61988/Documents/JmeterProject/Windchill/Windchill_JMeter_TestData.csv</stringProp>
+        <stringProp name="fileEncoding"></stringProp>
+        <stringProp name="variableNames">USERNAME,PASSWORD,PARTNAME,PRODUCTNAME,FOLDERNAME,PARTNAMES</stringProp>
+        <boolProp name="ignoreFirstLine">true</boolProp>
+        <stringProp name="delimiter">,</stringProp>
+        <boolProp name="quotedData">false</boolProp>
+        <boolProp name="recycle">true</boolProp>
+        <boolProp name="stopThread">false</boolProp>
+        <stringProp name="shareMode">shareMode.all</stringProp>
+      </CSVDataSet>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Windchill Search">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.ChromeDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig" testname="WebDriver Config (Chrome Driver Setup)" enabled="true">
+          <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
+          <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
+          <stringProp name="WebDriverConfig.driver_path">C:\Users\61988\Documents\JmeterProject\Windchill\drivers\chromedriver.exe</stringProp>
+          <boolProp name="WebDriverConfig.dev_mode">false</boolProp>
+          <boolProp name="WebDriverConfig.headless">false</boolProp>
+          <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>
+          <stringProp name="ChromeDriverConfig.additional_args"></stringProp>
+          <stringProp name="ChromeDriverConfig.binary_path"></stringProp>
+          <stringProp name="WebDriverConfig.proxy_type">SYSTEM</stringProp>
+          <stringProp name="WebDriverConfig.proxy_pac_url"></stringProp>
+          <stringProp name="WebDriverConfig.http_host"></stringProp>
+          <intProp name="WebDriverConfig.http_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_http_for_all_protocols">true</boolProp>
+          <stringProp name="WebDriverConfig.https_host"></stringProp>
+          <intProp name="WebDriverConfig.https_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_ftp_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.ftp_host"></stringProp>
+          <intProp name="WebDriverConfig.ftp_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_socks_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.socks_host"></stringProp>
+          <intProp name="WebDriverConfig.socks_port">8080</intProp>
+          <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
+          <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Login To Windchill" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Login_To_Windchill" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    // Get WebDriver
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    // Credentials and URL
+    String username = &quot;${USERNAME}&quot;;
+    String password = &quot;${PASSWORD}&quot;;
+    String baseUrl  = &quot;plmtvdr3.plmtestlab.com/Windchill/app/&quot;;
+    String fullUrl  = &quot;https://&quot; + username + &quot;:&quot; + password + &quot;@&quot; + baseUrl;
+
+    // Navigate to Windchill
+    driver.get(fullUrl);
+
+    // Validate login by checking page title
+    if (driver.getTitle().toLowerCase().contains(&quot;windchill&quot;)) {
+
+        // Try closing popup if present
+        try {
+            org.openqa.selenium.WebElement popupClose = driver.findElement(
+                org.openqa.selenium.By.xpath(
+                    &quot;//div[contains(@class, &apos;x-window-mc&apos;)]//div[contains(@class, &apos;x-tool-close&apos;)]&quot;
+                )
+            );
+
+            if (popupClose.isDisplayed()) {
+                popupClose.click();
+                WDS.log.info(&quot;Popup closed successfully.&quot;);
+            }
+
+        } catch (org.openqa.selenium.NoSuchElementException ignored) {
+            WDS.log.info(&quot;No popup present to close.&quot;);
+        }
+
+        // Mark login successful (no browse link click now)
+        WDS.sampleResult.setSuccessful(true);
+        WDS.sampleResult.setResponseMessage(&quot;Login successful and popup closed (if present).&quot;);
+        WDS.sampleResult.setResponseCodeOK();
+
+    } else {
+        // Unexpected page title — mark test as failed and log
+        String msg = &quot;Unexpected page title: &quot; + driver.getTitle();
+        WDS.log.error(msg);
+        WDS.sampleResult.setSuccessful(false);
+        WDS.sampleResult.setResponseMessage(msg);
+        WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    }
+
+} catch (Throwable e) {
+    // Exception occurred — log error and mark test as failed
+    WDS.log.error(&quot;Exception during login: &quot; + e.getMessage(), e);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Search Objects" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Global_Search" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    // Get WebDriver
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    // Part to search
+    partName = &quot;${PARTNAME}&quot;;
+
+    // Inject part name into search field
+    searchBox = driver.findElement(org.openqa.selenium.By.id(&quot;gloabalSearchField&quot;));
+    searchBox.click();
+    WDS.log.info(&quot;Clicked on Search text box&quot;);
+
+    // Use JavaScript to inject value
+    jsExecutor = ((org.openqa.selenium.JavascriptExecutor) driver);
+    args = new Object[1];
+    args[0] = searchBox;
+    jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + partName + &quot;&apos;;&quot;, args);
+    WDS.log.info(&quot;&apos;&quot; + partName + &quot;&apos; entered in Search Box&quot;);
+
+    // Click search button
+    searchButton = driver.findElement(
+        org.openqa.selenium.By.xpath(
+            &quot;//div[@id=&apos;globalSearch&apos;]//span[@class=&apos;x-form-twin-triggers&apos;]&quot; +
+            &quot;//img[contains(@src, &apos;/images/sp.gif&apos;) and @class=&apos;x-form-trigger global-search-trigger&apos;]&quot;
+        )
+    );
+    searchButton.click();
+    WDS.log.info(&quot;Clicked Search Icon&quot;);
+
+    // Wait for part name to appear anywhere on page
+    waitTime = java.time.Duration.ofSeconds(15);
+    wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, waitTime);
+
+    try {
+        partElement = (org.openqa.selenium.WebElement) wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+                org.openqa.selenium.By.xpath(&quot;.//div[contains(text(), &apos;&quot; + partName + &quot;&apos;)]&quot;)
+            )
+        );
+
+        WDS.log.info(&quot;Part &apos;&quot; + partName + &quot;&apos; is displayed.&quot;);
+        // Part found — mark test as successful
+        WDS.sampleResult.setSuccessful(true);
+        WDS.sampleResult.setResponseMessage(&quot;Part &apos;&quot; + partName + &quot;&apos; is displayed.&quot;);
+        WDS.sampleResult.setResponseCodeOK();
+
+    } catch (org.openqa.selenium.TimeoutException te) {
+        // Part not found — mark test as failed
+        WDS.sampleResult.setSuccessful(false);
+        WDS.sampleResult.setResponseMessage(&quot;Part &apos;&quot; + partName + &quot;&apos; not found: &quot; + te.getMessage());
+        WDS.sampleResult.setResponseCode(&quot;404&quot;);
+        WDS.log.error(&quot;Part &apos;&quot; + partName + &quot;&apos; not found: &quot; + te.getMessage());
+    }
+
+} catch (Throwable e) {
+    // Exception occurred — mark test as failed
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Search failed: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Search failed: &quot; + e.getMessage());
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Copy of Assembly">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.ChromeDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig" testname="WebDriver Config (Chrome Driver Setup)" enabled="true">
+          <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
+          <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
+          <stringProp name="WebDriverConfig.driver_path">C:\Users\61988\Documents\JmeterProject\Windchill\drivers\chromedriver.exe</stringProp>
+          <boolProp name="WebDriverConfig.dev_mode">false</boolProp>
+          <boolProp name="WebDriverConfig.headless">false</boolProp>
+          <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>
+          <stringProp name="ChromeDriverConfig.additional_args"></stringProp>
+          <stringProp name="ChromeDriverConfig.binary_path"></stringProp>
+          <stringProp name="WebDriverConfig.proxy_type">SYSTEM</stringProp>
+          <stringProp name="WebDriverConfig.proxy_pac_url"></stringProp>
+          <stringProp name="WebDriverConfig.http_host"></stringProp>
+          <intProp name="WebDriverConfig.http_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_http_for_all_protocols">true</boolProp>
+          <stringProp name="WebDriverConfig.https_host"></stringProp>
+          <intProp name="WebDriverConfig.https_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_ftp_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.ftp_host"></stringProp>
+          <intProp name="WebDriverConfig.ftp_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_socks_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.socks_host"></stringProp>
+          <intProp name="WebDriverConfig.socks_port">8080</intProp>
+          <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
+          <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Login To Windchill" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Login_To_Windchill" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    // Get WebDriver
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    // Credentials and URL
+    String username = &quot;${USERNAME}&quot;;
+    String password = &quot;${PASSWORD}&quot;;
+    String baseUrl  = &quot;plmtvdr3.plmtestlab.com/Windchill/app/&quot;;
+    String fullUrl  = &quot;https://&quot; + username + &quot;:&quot; + password + &quot;@&quot; + baseUrl;
+
+    // Navigate to Windchill
+    driver.get(fullUrl);
+
+    // Validate login by checking page title
+    if (driver.getTitle().toLowerCase().contains(&quot;windchill&quot;)) {
+
+        // Try closing popup if present
+        try {
+            org.openqa.selenium.WebElement popupClose = driver.findElement(
+                org.openqa.selenium.By.xpath(
+                    &quot;//div[contains(@class, &apos;x-window-mc&apos;)]//div[contains(@class, &apos;x-tool-close&apos;)]&quot;
+                )
+            );
+
+            if (popupClose.isDisplayed()) {
+                popupClose.click();
+                WDS.log.info(&quot;Popup closed successfully.&quot;);
+            }
+
+        } catch (org.openqa.selenium.NoSuchElementException ignored) {
+            WDS.log.info(&quot;No popup present to close.&quot;);
+        }
+
+        // Mark login successful (no browse link click now)
+        WDS.sampleResult.setSuccessful(true);
+        WDS.sampleResult.setResponseMessage(&quot;Login successful and popup closed (if present).&quot;);
+        WDS.sampleResult.setResponseCodeOK();
+
+    } else {
+        // Unexpected page title — mark test as failed and log
+        String msg = &quot;Unexpected page title: &quot; + driver.getTitle();
+        WDS.log.error(msg);
+        WDS.sampleResult.setSuccessful(false);
+        WDS.sampleResult.setResponseMessage(msg);
+        WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    }
+
+} catch (Throwable e) {
+    // Exception occurred — log error and mark test as failed
+    WDS.log.error(&quot;Exception during login: &quot; + e.getMessage(), e);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Prerequisites "/>
+          <hashTree>
+            <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Goto Product page &amp; Select Folder">
+              <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    // WebDriverWait
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // STEP 2: Click &quot;Goto Browse&quot;
+    org.openqa.selenium.WebElement browseLink = driver.findElement(org.openqa.selenium.By.xpath(&quot;//a[@id=&apos;object_main_navigation_nav&apos;]&quot;));
+    browseLink.click();
+    WDS.log.info(&quot;Clicked &apos;Goto Browse&apos; link&quot;);
+
+    // STEP 3: Click Recent Product icon
+    org.openqa.selenium.WebElement recentProductIcon = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+            org.openqa.selenium.By.xpath(&quot;//span[contains(@class, &apos;productNavigation-icon&apos;)]&quot;)
+        )
+    );
+    recentProductIcon.click();
+    WDS.log.info(&quot;Clicked Recent Product icon&quot;);
+
+    // STEP 4: Click &quot;View All&quot;
+    org.openqa.selenium.WebElement viewAllLink = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+            org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;View All&apos;)]&quot;)
+        )
+    );
+    viewAllLink.click();
+    WDS.log.info(&quot;Clicked &apos;View All&apos; link&quot;);
+
+    // STEP 5: Click product name or search it
+    String productName = &quot;${PRODUCTNAME}&quot;;
+    org.openqa.selenium.By productLinkLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + productName + &quot;&apos;)]&quot;);
+    try {
+        org.openqa.selenium.WebElement productLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(productLinkLocator)
+        );
+        productLink.click();
+        WDS.log.info(&quot;Product &apos;&quot; + productName + &quot;&apos; found and clicked.&quot;);
+    } catch (org.openqa.selenium.TimeoutException e) {
+        org.openqa.selenium.WebElement searchBox = driver.findElement(
+            org.openqa.selenium.By.id(&quot;netmarkets.product.list.searchInListTextBox&quot;)
+        );
+        searchBox.click();
+
+        // Inject value using JavaScript
+        org.openqa.selenium.JavascriptExecutor jsExecutor = ((org.openqa.selenium.JavascriptExecutor) driver);
+        Object[] args = new Object[1];
+        args[0] = searchBox;
+        jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + productName + &quot;&apos;;&quot;, args);
+        WDS.log.info(&quot;&apos;&quot; + productName + &quot;&apos; injected into product search box.&quot;);
+
+        org.openqa.selenium.WebElement searchIcon = driver.findElement(
+            org.openqa.selenium.By.xpath(&quot;//img[@class=&apos;x-formtrigger -x-form-search-trigger&apos;]&quot;)
+        );
+        searchIcon.click();
+
+        org.openqa.selenium.WebElement searchedProductLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(productLinkLocator)
+        );
+        searchedProductLink.click();
+        WDS.log.info(&quot;Product &apos;&quot; + productName + &quot;&apos; searched and clicked.&quot;);
+    }
+
+    // STEP 6: Navigate to folder (with stale element retry - Option 1)
+    String folderName = &quot;${FOLDERNAME}&quot;;
+    org.openqa.selenium.By folderLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + folderName + &quot;&apos;)]&quot;);
+    try {
+        org.openqa.selenium.WebElement folderLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(folderLocator)
+        );
+        folderLink.click();
+        WDS.log.info(&quot;Clicked on folder: &quot; + folderName);
+    } catch (org.openqa.selenium.StaleElementReferenceException staleEx) {
+        WDS.log.info(&quot;Caught stale element. Re-finding folder link and retrying click...&quot;);
+        org.openqa.selenium.WebElement folderLinkRetry = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(folderLocator)
+        );
+        folderLinkRetry.click();
+        WDS.log.info(&quot;Retried and clicked on folder: &quot; + folderName);
+    }
+
+    // STEP 6.1: Confirm active folder is Autotest2
+    Thread.sleep(200);
+    org.openqa.selenium.WebElement activeFolderName = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+            org.openqa.selenium.By.xpath(&quot;//span[@id=&apos;infoPageIdentityObjectIdentifier&apos;]&quot;)
+        )
+    );
+    String currentFolder = activeFolderName.getText().trim();
+    WDS.log.info(&quot;Current active folder: &apos;&quot; + currentFolder + &quot;&apos;&quot;);
+
+    if (currentFolder.equalsIgnoreCase(&quot;Autotest2&quot;)) {
+        WDS.log.info(&quot;Confirmed folder is &apos;Autotest2&apos;. Proceeding to check filter input value.&quot;);
+
+        // STEP 6.2: Get filter input field
+        org.openqa.selenium.WebElement filterInput = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+                org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;folderbrowser_PDMfilterSelect&apos;]&quot;)
+            )
+        );
+        String filterValue = filterInput.getAttribute(&quot;value&quot;).trim();
+        WDS.log.info(&quot;Filter input value: &apos;&quot; + filterValue + &quot;&apos;&quot;);
+
+        if (filterValue.equalsIgnoreCase(&quot;All&quot;)) {
+            WDS.log.info(&quot;Filter already set to &apos;All&apos;. Skipping dropdown interaction.&quot;);
+        } else {
+            // STEP 7: Click the dropdown image
+            org.openqa.selenium.WebElement filterDropdownArrow = wait.until(
+                org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+                    org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;folderbrowser_PDMfilterSelect&apos;]/following-sibling::img&quot;)
+                )
+            );
+            filterDropdownArrow.click();
+            WDS.log.info(&quot;Clicked filter dropdown arrow.&quot;);
+
+            // STEP 8: Click on &apos;All&apos;
+            org.openqa.selenium.WebElement allOption = wait.until(
+                org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+                    org.openqa.selenium.By.xpath(&quot;//div[normalize-space(text())=&apos;All&apos;]&quot;)
+                )
+            );
+            allOption.click();
+            WDS.log.info(&quot;Clicked &apos;All&apos; from dropdown.&quot;);
+        }
+
+    } else {
+        WDS.log.info(&quot;Current folder is NOT &apos;Autotest2&apos;. Skipping filter steps.&quot;);
+        WDS.sampleResult.setSuccessful(false);
+        WDS.sampleResult.setResponseMessage(&quot;Test failed: Expected folder &apos;Autotest2&apos;, but found &apos;&quot; + currentFolder + &quot;&apos;.&quot;);
+        WDS.sampleResult.setResponseCode(&quot;400&quot;);
+        return;
+    }
+
+    // All steps successful
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Navigation completed including filter check.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error during navigation: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception during navigation: &quot;, e);
+}
+</stringProp>
+              <stringProp name="WebDriverSampler.parameters"></stringProp>
+              <stringProp name="WebDriverSampler.language">java</stringProp>
+            </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Click On Save as">
+              <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // Get JavaScript executor
+    org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+
+    // 1. Click on part by name (parameterized)
+    String partName = &quot;${PARTNAMES}&quot;;
+    org.openqa.selenium.By partLocator = org.openqa.selenium.By.xpath(&quot;//a[normalize-space(text()) = &apos;&quot; + partName + &quot;&apos;]&quot;);
+
+    org.openqa.selenium.WebElement partElement = null;
+    boolean partFound = false;
+    int maxScrollAttempts = 70;
+    int scrollStep = 800;
+
+    // Get the scroller element
+    org.openqa.selenium.WebElement scroller = driver.findElement(org.openqa.selenium.By.xpath(&quot;(//div[@class=&apos;x-grid3-scroller&apos;])[2]&quot;));
+
+    for (int i = 0; i &lt; maxScrollAttempts; i++) {
+        try {
+            partElement = driver.findElement(partLocator);
+            if (partElement.isDisplayed()) {
+                partElement.click();
+                WDS.log.info(&quot;Clicked on part: &quot; + partName + &quot; at scroll attempt &quot; + (i + 1));
+                partFound = true;
+                break;
+            }
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            // Element not found yet
+        } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+            // Element might be overlapped but visible, try again later
+        }
+
+        // Scroll the container
+        js.executeScript(&quot;arguments[0].scrollTop += arguments[1];&quot;, new Object[]{scroller, Long.valueOf(scrollStep)});
+        WDS.log.info(&quot;Scroll attempt &quot; + (i + 1) + &quot; to find part: &quot; + partName);
+
+    }
+
+    if (!partFound) {
+        throw new Exception(&quot;Part &apos;&quot; + partName + &quot;&apos; not found after scrolling.&quot;);
+    }
+
+    // 2. Click on tab &quot;Structure&quot; (hardcoded)
+    org.openqa.selenium.By tabLocator = org.openqa.selenium.By.xpath(&quot;//span[contains(text(), &apos;Structure&apos;)]&quot;);
+    org.openqa.selenium.WebElement tabElement = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(tabLocator)
+    );
+    tabElement.click();
+    WDS.log.info(&quot;Clicked on tab: Structure&quot;);
+
+    // 3. Click on Actions button
+    org.openqa.selenium.By actionsLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(text(), &apos;Actions&apos;)]&quot;);
+    org.openqa.selenium.WebElement actionsButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(actionsLocator)
+    );
+    actionsButton.click();
+    WDS.log.info(&quot;Clicked on &apos;Actions&apos; button&quot;);
+
+    // 4. Click on &quot;Save As&quot; in takeAction menu
+    org.openqa.selenium.By saveAsLocator = org.openqa.selenium.By.xpath(&quot;//span[contains(text(), &apos;Save As&apos;)]&quot;);
+    org.openqa.selenium.WebElement saveAsElement = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(saveAsLocator)
+    );
+    saveAsElement.click();
+    WDS.log.info(&quot;Clicked on &apos;Save As&apos; action&quot;);
+
+    // Mark sample as success
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;All clicks completed successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error during clicking: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception occurred: &quot;, e);
+}
+</stringProp>
+              <stringProp name="WebDriverSampler.parameters"></stringProp>
+              <stringProp name="WebDriverSampler.language">java</stringProp>
+            </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Create Copy of Assembly" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Collect Objects">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // 1. Switch to iframe
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched to iframe: lbContentIframe&quot;);
+
+    // 2. Click on &quot;Dependents&quot; button
+    org.openqa.selenium.By dependentsLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(text(), &apos;Dependents&apos;)]&quot;);
+    org.openqa.selenium.WebElement dependentsButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(dependentsLocator)
+    );
+    dependentsButton.click();
+    WDS.log.info(&quot;Clicked on &apos;Dependents&apos; button&quot;);
+
+    // 3. Click on &quot;All&quot; tab/span
+    org.openqa.selenium.By allTabLocator = org.openqa.selenium.By.xpath(&quot;//span[contains(text(), &apos;All&apos;)]&quot;);
+    org.openqa.selenium.WebElement allTab = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(allTabLocator)
+    );
+    allTab.click();
+    WDS.log.info(&quot;Clicked on &apos;All&apos; tab&quot;);
+
+    // 4. Click the &quot;Select All&quot; checkbox
+    org.openqa.selenium.By selectAllCheckboxLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement selectAllCheckbox = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(selectAllCheckboxLocator)
+    );
+    selectAllCheckbox.click();
+    WDS.log.info(&quot;Clicked on &apos;Select All&apos; checkbox.&quot;);
+
+    // 5. Switch back to default content
+    driver.switchTo().defaultContent();
+    WDS.log.info(&quot;Switched back to default content&quot;);
+
+    // ✅ Mark the test as successful
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;All Objects has been collected&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    // 🔥 Log full stack trace for debugging
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error occurred:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Rename Objects">
+            <stringProp name="WebDriverSampler.script">try {
+    // Setup
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // Get part name from CSV parameter
+    String partName = &quot;${PARTNAMES}&quot;;
+    WDS.log.info(&quot;PARTNAMES from CSV: &quot; + partName);
+
+    // Switch to iframe
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;Commonspace Save As&apos;&quot;);
+
+    // Click &quot;Set New Name&quot; button
+    org.openqa.selenium.By setNewNameBtnLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(@style, &apos;images/set_new_name.gif&apos;)]&quot;);
+    org.openqa.selenium.WebElement setNewNameBtn = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(setNewNameBtnLocator)
+    );
+    setNewNameBtn.click();
+    WDS.log.info(&quot;Clicked &apos;Set New Name&apos; button&quot;);
+
+    // Switch to new window
+    String mainWindow = driver.getWindowHandle();
+    for (String handle : driver.getWindowHandles()) {
+        if (!handle.equals(mainWindow)) {
+            driver.switchTo().window(handle);
+            break;
+        }
+    }
+    WDS.log.info(&quot;Switched to new window: &quot; + driver.getTitle());
+
+    // Wait for input field
+    org.openqa.selenium.WebElement NewInputNameField = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+            org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;NameReplace&apos;]&quot;)
+        )
+    );
+    NewInputNameField.click();
+    WDS.log.info(&quot;Clicked on new name field&quot;);
+
+    // Get current value and split at &quot;_&quot;
+    String currentValue = NewInputNameField.getAttribute(&quot;value&quot;);
+    WDS.log.info(&quot;Current input value: &quot; + currentValue);
+
+    String prefix = currentValue.split(&quot;_&quot;)[0];  // before &quot;_&quot;
+    String suffix = currentValue.substring(currentValue.indexOf(&quot;.&quot;)); // includes the dot and extension
+
+    // Generate random padded number like 001–999
+    int randomNum = 1 + (int)(Math.random() * 999);
+    String paddedNum = (randomNum &lt; 10) ? &quot;00&quot; + randomNum
+                     : (randomNum &lt; 100) ? &quot;0&quot; + randomNum
+                     : Integer.toString(randomNum);
+
+    String newName = prefix + &quot;_&quot; + paddedNum + suffix;
+    WDS.log.info(&quot;Generated new name: &quot; + newName);
+
+    // Inject value using JS (your required format)
+    org.openqa.selenium.JavascriptExecutor jsExecutor = ((org.openqa.selenium.JavascriptExecutor) driver);
+    Object[] args = new Object[1];
+    args[0] = NewInputNameField;
+    jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + newName + &quot;&apos;;&quot;, args);
+    WDS.log.info(&quot;&apos;&quot; + newName + &quot;&apos; entered in New name field.&quot;);
+
+    // Click OK in in New Window
+    org.openqa.selenium.By okBtnLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(text(), &apos;OK&apos;)]&quot;);
+    org.openqa.selenium.WebElement okBtn = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(okBtnLocator)
+    );
+    okBtn.click();
+    WDS.log.info(&quot;Clicked OK in new Window&quot;);
+
+    // Switch back to main window
+    driver.switchTo().window(mainWindow);
+    WDS.log.info(&quot;Switched back to main window&quot;);
+
+    // Switch to iframe again
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched back to iframe &apos;Commonspace Save As&apos;&quot;);
+
+
+    // ✅ NEW STEP: Capture the updated name from the input field inside the grid
+String inputXpath = &quot;//div[contains(text(),&apos;&quot; + partName + &quot;&apos;)]/parent::td/following-sibling::td[contains(@class, &apos;x-grid3-td-newName&apos;)]/div/input&quot;;
+org.openqa.selenium.By inputFieldLocator = org.openqa.selenium.By.xpath(inputXpath);
+org.openqa.selenium.WebElement inputField = wait.until(
+    org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(inputFieldLocator)
+);
+String displayedNewName = inputField.getAttribute(&quot;value&quot;).trim();
+WDS.log.info(&quot;Captured updated name for &apos;&quot; + partName + &quot;&apos;: &quot; + displayedNewName);
+
+
+//    // ✅ NEW STEP: Capture the updated name from the grid
+//    String xpath = &quot;//div[contains(text(),&apos;&quot; + partName + &quot;&apos;)]/parent::td/following-sibling::td[contains(@class, &apos;x-grid3-td-newName&apos;)]&quot;;
+//    org.openqa.selenium.By newNameCellLocator = org.openqa.selenium.By.xpath(xpath);
+//    org.openqa.selenium.WebElement newNameCell = wait.until(
+//        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(newNameCellLocator)
+//    );
+//    String displayedNewName = newNameCell.getText().trim();
+//    WDS.log.info(&quot;Captured updated name for &apos;&quot; + partName + &quot;&apos;: &quot; + displayedNewName);
+
+    // ✅ Store in JMeter property (for use in other thread groups)
+    WDS.props.put(&quot;UpdatedPartName&quot;, displayedNewName);
+    WDS.log.info(&quot;Stored property &apos;UpdatedPartName&apos; = &quot; + displayedNewName);
+
+    // Final OK button
+    org.openqa.selenium.By finalOkBtnLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(text(), &apos;K&apos;)]&quot;);
+    org.openqa.selenium.WebElement finalOkBtn = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(finalOkBtnLocator)
+    );
+    finalOkBtn.click();
+    WDS.log.info(&quot;Clicked final OK button in iframe&quot;);
+
+    // Mark sampler as successful
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Successfully renamed and stored UpdatedPartName.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception occurred: &quot;, e);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Add To Workspace">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.ChromeDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig" testname="WebDriver Config (Chrome Driver Setup)" enabled="true">
+          <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
+          <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
+          <stringProp name="WebDriverConfig.driver_path">C:\Users\61988\Documents\JmeterProject\Windchill\drivers\chromedriver.exe</stringProp>
+          <boolProp name="WebDriverConfig.dev_mode">false</boolProp>
+          <boolProp name="WebDriverConfig.headless">false</boolProp>
+          <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>
+          <stringProp name="ChromeDriverConfig.additional_args"></stringProp>
+          <stringProp name="ChromeDriverConfig.binary_path"></stringProp>
+          <stringProp name="WebDriverConfig.proxy_type">SYSTEM</stringProp>
+          <stringProp name="WebDriverConfig.proxy_pac_url"></stringProp>
+          <stringProp name="WebDriverConfig.http_host"></stringProp>
+          <intProp name="WebDriverConfig.http_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_http_for_all_protocols">true</boolProp>
+          <stringProp name="WebDriverConfig.https_host"></stringProp>
+          <intProp name="WebDriverConfig.https_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_ftp_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.ftp_host"></stringProp>
+          <intProp name="WebDriverConfig.ftp_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_socks_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.socks_host"></stringProp>
+          <intProp name="WebDriverConfig.socks_port">8080</intProp>
+          <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
+          <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Login To Windchill" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Login_To_Windchill" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    String username = &quot;${USERNAME}&quot;;
+    String password = &quot;${PASSWORD}&quot;;
+    String baseUrl  = &quot;plmtvdr3.plmtestlab.com/Windchill/app/#ptc1/workspaces/MyWorkspace&quot;;
+    String fullUrl  = &quot;https://&quot; + username + &quot;:&quot; + password + &quot;@&quot; + baseUrl;
+
+    driver.get(fullUrl);
+    WDS.log.info(&quot;Navigated to: &quot; + fullUrl);
+
+    // Try closing popup if present
+    try {
+        org.openqa.selenium.WebElement popupClose = driver.findElement(
+            org.openqa.selenium.By.xpath(&quot;//div[contains(@class, &apos;x-window-mc&apos;)]//div[contains(@class, &apos;x-tool-close&apos;)]&quot;)
+        );
+        if (popupClose.isDisplayed()) {
+            popupClose.click();
+            WDS.log.info(&quot;Popup closed successfully.&quot;);
+        }
+    } catch (org.openqa.selenium.NoSuchElementException ignored) {
+        WDS.log.info(&quot;No popup present to close.&quot;);
+    }
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Login successful and popup handled.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.log.error(&quot;Exception during login:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Add to Workspace" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Define Scope" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+//    // Navigate directly to MyWorkspace page (session must already be authenticated)
+//    String fullUrl = &quot;https://plmtvdr3.plmtestlab.com/Windchill/app/#ptc1/workspaces/MyWorkspace&quot;;
+//    driver.get(fullUrl);
+//    WDS.log.info(&quot;Navigated to: &quot; + fullUrl);
+
+    // Set up explicit wait
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // Click &quot;Create Workspace&quot; button
+    org.openqa.selenium.By createButtonLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(@style, &apos;images/create_tbar.gif&apos;)]&quot;);
+    org.openqa.selenium.WebElement createButton = driver.findElement(createButtonLocator);
+    createButton.click();
+    WDS.log.info(&quot;Clicked on &apos;Create Workspace&apos; button.&quot;);
+
+    // Switch to iframe containing the create workspace form
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched to iframe: lbContentIframe&quot;);
+
+    // Get product name from JMeter variable
+    String productName = &quot;${PRODUCTNAME}&quot;;
+
+    // Wait for product name input field
+    org.openqa.selenium.WebElement productNameField = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+            org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;cwsContainerName&apos;]&quot;)
+        )
+    );
+    productNameField.click();
+    WDS.log.info(&quot;Clicked on product name field&quot;);
+
+    // Inject product name using JavaScript
+    org.openqa.selenium.JavascriptExecutor jsExecutor = ((org.openqa.selenium.JavascriptExecutor) driver);
+    Object[] args = new Object[1];
+    args[0] = productNameField;
+    jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + productName + &quot;&apos;;&quot;, args);
+    WDS.log.info(&quot;&apos;&quot; + productName + &quot;&apos; entered in product name field&quot;);
+
+    // Done
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Navigated and set product name successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.log.error(&quot;Exception during workspace operation:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Create Workspace" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+//   // Navigate directly to MyWorkspace page (session must already be authenticated)
+//    String fullUrl = &quot;https://plmtvdr3.plmtestlab.com/Windchill/app/#ptc1/workspaces/MyWorkspace&quot;;
+//    driver.get(fullUrl);
+//    WDS.log.info(&quot;Navigated to: &quot; + fullUrl);
+
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+//    org.openqa.selenium.By createButtonLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(@style, &apos;images/create_tbar.gif&apos;)]&quot;);
+//    org.openqa.selenium.WebElement createButton = driver.findElement(createButtonLocator);
+//    createButton.click();
+//    WDS.log.info(&quot;Clicked on &apos;Create Workspace&apos; button.&quot;);
+
+//    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+//    WDS.log.info(&quot;Switched to iframe: lbContentIframe&quot;);
+
+    // Generate random workspace name
+    int randomNum = (int)(Math.random() * 9000) + 1000;
+    String workspaceName = &quot;Workspace_&quot; + randomNum;
+    String productName = &quot;${PRODUCTNAME}&quot;;
+    // Store in JMeter variable
+   // vars.put(&quot;workspaceName&quot;, workspaceName);  // &lt;-- THIS is the key line
+
+   // ✅ Store in JMeter property (for cross-thread access)
+WDS.props.put(&quot;workspaceName&quot;, workspaceName);
+
+    // Workspace name field
+    org.openqa.selenium.WebElement workspaceNameField = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+            org.openqa.selenium.By.xpath(&quot;//input[@name=&apos;workspaceName&apos;]&quot;)
+        )
+    );
+    workspaceNameField.click();
+    WDS.log.info(&quot;Clicked on workspace name field&quot;);
+
+    // Inject workspace name using JavaScript
+    org.openqa.selenium.JavascriptExecutor jsExecutor = ((org.openqa.selenium.JavascriptExecutor) driver);
+    Object[] args = new Object[1];
+    args[0] = workspaceNameField;
+    jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + workspaceName + &quot;&apos;;&quot;, args);
+    WDS.log.info(&quot;&apos;&quot; + workspaceName + &quot;&apos; entered in workspace name field&quot;);
+
+//    // Product name field
+//    org.openqa.selenium.WebElement productNameField = wait.until(
+//        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+//            org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;cwsContainerName&apos;]&quot;)
+//        )
+//    );
+//    productNameField.click();
+//    WDS.log.info(&quot;Clicked on product name field&quot;);
+//
+//    // Inject product name using JavaScript
+//    args[0] = productNameField;
+//    jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + productName + &quot;&apos;;&quot;, args);
+//    WDS.log.info(&quot;&apos;&quot; + productName + &quot;&apos; entered in product name field&quot;);
+
+    // Click OK
+    org.openqa.selenium.WebElement okButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+            org.openqa.selenium.By.xpath(&quot;//button[contains(text(),&apos;OK&apos;)]&quot;)
+        )
+    );
+    okButton.click();
+    WDS.log.info(&quot;Clicked on &apos;OK&apos; button to create workspace.&quot;);
+
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Workspace &apos;&quot; + workspaceName + &quot;&apos; created successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.log.error(&quot;Exception during workspace creation:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Add Assembly Part to Workspace">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.ChromeDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig" testname="WebDriver Config (Chrome Driver Setup)" enabled="true">
+          <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
+          <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
+          <stringProp name="WebDriverConfig.driver_path">C:\Users\61988\Documents\JmeterProject\Windchill\drivers\chromedriver.exe</stringProp>
+          <boolProp name="WebDriverConfig.dev_mode">false</boolProp>
+          <boolProp name="WebDriverConfig.headless">false</boolProp>
+          <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>
+          <stringProp name="ChromeDriverConfig.additional_args"></stringProp>
+          <stringProp name="ChromeDriverConfig.binary_path"></stringProp>
+          <stringProp name="WebDriverConfig.proxy_type">SYSTEM</stringProp>
+          <stringProp name="WebDriverConfig.proxy_pac_url"></stringProp>
+          <stringProp name="WebDriverConfig.http_host"></stringProp>
+          <intProp name="WebDriverConfig.http_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_http_for_all_protocols">true</boolProp>
+          <stringProp name="WebDriverConfig.https_host"></stringProp>
+          <intProp name="WebDriverConfig.https_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_ftp_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.ftp_host"></stringProp>
+          <intProp name="WebDriverConfig.ftp_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_socks_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.socks_host"></stringProp>
+          <intProp name="WebDriverConfig.socks_port">8080</intProp>
+          <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
+          <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Login To Windchill" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Login_To_Windchill" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    String username = &quot;${USERNAME}&quot;;
+    String password = &quot;${PASSWORD}&quot;;
+    String baseUrl  = &quot;plmtvdr3.plmtestlab.com/Windchill/app/#ptc1/workspaces/MyWorkspace&quot;;
+    String fullUrl  = &quot;https://&quot; + username + &quot;:&quot; + password + &quot;@&quot; + baseUrl;
+
+    driver.get(fullUrl);
+    WDS.log.info(&quot;Navigated to: &quot; + fullUrl);
+
+    // Try closing popup if present
+    try {
+        org.openqa.selenium.WebElement popupClose = driver.findElement(
+            org.openqa.selenium.By.xpath(&quot;//div[contains(@class, &apos;x-window-mc&apos;)]//div[contains(@class, &apos;x-tool-close&apos;)]&quot;)
+        );
+        if (popupClose.isDisplayed()) {
+            popupClose.click();
+            WDS.log.info(&quot;Popup closed successfully.&quot;);
+        }
+    } catch (org.openqa.selenium.NoSuchElementException ignored) {
+        WDS.log.info(&quot;No popup present to close.&quot;);
+    }
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Login successful and popup handled.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.log.error(&quot;Exception during login:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Prerequisites "/>
+          <hashTree>
+            <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Goto Product page &amp; Select Folder">
+              <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    // WebDriverWait
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // STEP 2: Click &quot;Goto Browse&quot;
+    org.openqa.selenium.WebElement browseLink = driver.findElement(org.openqa.selenium.By.xpath(&quot;//a[@id=&apos;object_main_navigation_nav&apos;]&quot;));
+    browseLink.click();
+    WDS.log.info(&quot;Clicked &apos;Goto Browse&apos; link&quot;);
+
+    // STEP 3: Click Recent Product icon
+    org.openqa.selenium.WebElement recentProductIcon = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+            org.openqa.selenium.By.xpath(&quot;//span[contains(@class, &apos;productNavigation-icon&apos;)]&quot;)
+        )
+    );
+    recentProductIcon.click();
+    WDS.log.info(&quot;Clicked Recent Product icon&quot;);
+
+    // STEP 4: Click &quot;View All&quot;
+    org.openqa.selenium.WebElement viewAllLink = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+            org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;View All&apos;)]&quot;)
+        )
+    );
+    viewAllLink.click();
+    WDS.log.info(&quot;Clicked &apos;View All&apos; link&quot;);
+
+    // STEP 5: Click product name or search it
+    String productName = &quot;${PRODUCTNAME}&quot;;
+    org.openqa.selenium.By productLinkLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + productName + &quot;&apos;)]&quot;);
+    try {
+        org.openqa.selenium.WebElement productLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(productLinkLocator)
+        );
+        productLink.click();
+        WDS.log.info(&quot;Product &apos;&quot; + productName + &quot;&apos; found and clicked.&quot;);
+    } catch (org.openqa.selenium.TimeoutException e) {
+        org.openqa.selenium.WebElement searchBox = driver.findElement(
+            org.openqa.selenium.By.id(&quot;netmarkets.product.list.searchInListTextBox&quot;)
+        );
+        searchBox.click();
+
+        // Inject value using JavaScript
+        org.openqa.selenium.JavascriptExecutor jsExecutor = ((org.openqa.selenium.JavascriptExecutor) driver);
+        Object[] args = new Object[1];
+        args[0] = searchBox;
+        jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + productName + &quot;&apos;;&quot;, args);
+        WDS.log.info(&quot;&apos;&quot; + productName + &quot;&apos; injected into product search box.&quot;);
+
+        org.openqa.selenium.WebElement searchIcon = driver.findElement(
+            org.openqa.selenium.By.xpath(&quot;//img[@class=&apos;x-formtrigger -x-form-search-trigger&apos;]&quot;)
+        );
+        searchIcon.click();
+
+        org.openqa.selenium.WebElement searchedProductLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(productLinkLocator)
+        );
+        searchedProductLink.click();
+        WDS.log.info(&quot;Product &apos;&quot; + productName + &quot;&apos; searched and clicked.&quot;);
+    }
+
+    // STEP 6: Navigate to folder (with stale element retry - Option 1)
+    String folderName = &quot;${FOLDERNAME}&quot;;
+    org.openqa.selenium.By folderLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + folderName + &quot;&apos;)]&quot;);
+    try {
+        org.openqa.selenium.WebElement folderLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(folderLocator)
+        );
+        folderLink.click();
+        WDS.log.info(&quot;Clicked on folder: &quot; + folderName);
+    } catch (org.openqa.selenium.StaleElementReferenceException staleEx) {
+        WDS.log.info(&quot;Caught stale element. Re-finding folder link and retrying click...&quot;);
+        org.openqa.selenium.WebElement folderLinkRetry = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(folderLocator)
+        );
+        folderLinkRetry.click();
+        WDS.log.info(&quot;Retried and clicked on folder: &quot; + folderName);
+    }
+
+    // STEP 6.1: Confirm active folder is Autotest2
+    Thread.sleep(200);
+    org.openqa.selenium.WebElement activeFolderName = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+            org.openqa.selenium.By.xpath(&quot;//span[@id=&apos;infoPageIdentityObjectIdentifier&apos;]&quot;)
+        )
+    );
+    String currentFolder = activeFolderName.getText().trim();
+    WDS.log.info(&quot;Current active folder: &apos;&quot; + currentFolder + &quot;&apos;&quot;);
+
+    if (currentFolder.equalsIgnoreCase(&quot;Autotest2&quot;)) {
+        WDS.log.info(&quot;Confirmed folder is &apos;Autotest2&apos;. Proceeding to check filter input value.&quot;);
+
+        // STEP 6.2: Get filter input field
+        org.openqa.selenium.WebElement filterInput = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+                org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;folderbrowser_PDMfilterSelect&apos;]&quot;)
+            )
+        );
+        String filterValue = filterInput.getAttribute(&quot;value&quot;).trim();
+        WDS.log.info(&quot;Filter input value: &apos;&quot; + filterValue + &quot;&apos;&quot;);
+
+        if (filterValue.equalsIgnoreCase(&quot;All&quot;)) {
+            WDS.log.info(&quot;Filter already set to &apos;All&apos;. Skipping dropdown interaction.&quot;);
+        } else {
+            // STEP 7: Click the dropdown image
+            org.openqa.selenium.WebElement filterDropdownArrow = wait.until(
+                org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+                    org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;folderbrowser_PDMfilterSelect&apos;]/following-sibling::img&quot;)
+                )
+            );
+            filterDropdownArrow.click();
+            WDS.log.info(&quot;Clicked filter dropdown arrow.&quot;);
+
+            // STEP 8: Click on &apos;All&apos;
+            org.openqa.selenium.WebElement allOption = wait.until(
+                org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+                    org.openqa.selenium.By.xpath(&quot;//div[normalize-space(text())=&apos;All&apos;]&quot;)
+                )
+            );
+            allOption.click();
+            WDS.log.info(&quot;Clicked &apos;All&apos; from dropdown.&quot;);
+        }
+
+    } else {
+        WDS.log.info(&quot;Current folder is NOT &apos;Autotest2&apos;. Skipping filter steps.&quot;);
+        WDS.sampleResult.setSuccessful(false);
+        WDS.sampleResult.setResponseMessage(&quot;Test failed: Expected folder &apos;Autotest2&apos;, but found &apos;&quot; + currentFolder + &quot;&apos;.&quot;);
+        WDS.sampleResult.setResponseCode(&quot;400&quot;);
+        return;
+    }
+
+    // All steps successful
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Navigation completed including filter check.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error during navigation: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception during navigation: &quot;, e);
+}
+</stringProp>
+              <stringProp name="WebDriverSampler.parameters"></stringProp>
+              <stringProp name="WebDriverSampler.language">java</stringProp>
+            </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Navigate to add To Workspace">
+              <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+// Get JavaScript executor
+    org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+    // 1. Click on part by name (from JMeter property)
+    String partName = WDS.props.get(&quot;UpdatedPartName&quot;);
+    if (partName == null || partName.isEmpty()) {
+        throw new Exception(&quot;UpdatedPartName property is not set or is empty.&quot;);
+    }
+
+    org.openqa.selenium.By partLocator = org.openqa.selenium.By.xpath(&quot;//a[normalize-space(text()) = &apos;&quot; + partName + &quot;&apos;]&quot;);
+    org.openqa.selenium.WebElement scroller = driver.findElement(org.openqa.selenium.By.xpath(&quot;(//div[@class=&apos;x-grid3-scroller&apos;])[2]&quot;));
+
+    int scrollStep = 800;
+    int maxScrollAttempts = 70;
+    boolean partFound = false;
+
+    for (int i = 0; i &lt; maxScrollAttempts; i++) {
+        try {
+            org.openqa.selenium.WebElement partElement = driver.findElement(partLocator);
+            if (partElement.isDisplayed()) {
+                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(partElement)).click();
+                WDS.log.info(&quot;Clicked on part (from UpdatedPartName): &quot; + partName + &quot; at scroll attempt &quot; + (i + 1));
+                partFound = true;
+                break;
+            }
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+    // Continue scrolling
+} catch (org.openqa.selenium.ElementClickInterceptedException e) {
+    // Continue scrolling
+}
+        js.executeScript(&quot;arguments[0].scrollTop += arguments[1];&quot;, scroller, scrollStep);
+        WDS.log.info(&quot;Scroll attempt &quot; + (i + 1) + &quot; to find part: &quot; + partName);
+    }
+
+    if (!partFound) {
+        throw new Exception(&quot;Part &apos;&quot; + partName + &quot;&apos; not found after scrolling.&quot;);
+    }
+
+
+    // 2. Click on tab &quot;Structure&quot; (hardcoded)
+    org.openqa.selenium.By tabLocator = org.openqa.selenium.By.xpath(&quot;//span[contains(text(), &apos;Structure&apos;)]&quot;);
+    org.openqa.selenium.WebElement tabElement = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(tabLocator)
+    );
+    tabElement.click();
+    WDS.log.info(&quot;Clicked on tab: Structure&quot;);
+
+    // 3. Click on Actions button
+    org.openqa.selenium.By actionsLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(text(), &apos;Actions&apos;)]&quot;);
+    org.openqa.selenium.WebElement actionsButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(actionsLocator)
+    );
+    actionsButton.click();
+    WDS.log.info(&quot;Clicked on &apos;Actions&apos; button&quot;);
+
+    // 4. Locate the &quot;Add to Workspace&quot; element
+    org.openqa.selenium.By addToWorkspaceLocator = org.openqa.selenium.By.xpath(&quot;//span[contains(text(), &apos;Add to Workspace&apos;)]&quot;);
+    org.openqa.selenium.WebElement addToWorkspace = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(addToWorkspaceLocator)
+    );
+
+    // Scroll to the element using Actions
+    org.openqa.selenium.interactions.Actions actions = new org.openqa.selenium.interactions.Actions(driver);
+    actions.moveToElement(addToWorkspace).perform();
+    WDS.log.info(&quot;Scrolled to &apos;Add to Workspace&apos; element&quot;);
+
+    // Wait until clickable and then click
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(addToWorkspaceLocator));
+    addToWorkspace.click();
+    WDS.log.info(&quot;Clicked on &apos;Add to Workspace&apos; action&quot;);
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;All clicks completed successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error during clicking: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+              <stringProp name="WebDriverSampler.parameters"></stringProp>
+              <stringProp name="WebDriverSampler.language">java</stringProp>
+            </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Add Assembly To Workspace" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="add Assembly to Workspace" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // 1. Switch to iframe
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched to iframe: lbContentIframe&quot;);
+
+    // 2. Get workspaceName from JMeter properties
+    String workspaceName = (String) WDS.props.get(&quot;workspaceName&quot;);
+    WDS.log.info(&quot;Using workspaceName from global props: &quot; + workspaceName);
+
+    // 3. Select workspaceName in dropdown select#WS
+    org.openqa.selenium.By wsDropdownLocator = org.openqa.selenium.By.id(&quot;WS&quot;);
+    org.openqa.selenium.WebElement wsDropdown = wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(wsDropdownLocator));
+    org.openqa.selenium.support.ui.Select wsSelect = new org.openqa.selenium.support.ui.Select(wsDropdown);
+    wsSelect.selectByVisibleText(workspaceName);
+    WDS.log.info(&quot;Selected workspace: &quot; + workspaceName);
+
+    // 4. Select &quot;All&quot; in select#Download_ASSOCIATED_WTPART
+    org.openqa.selenium.By assocPartDropdownLocator = org.openqa.selenium.By.id(&quot;Download_ASSOCIATED_WTPART&quot;);
+    org.openqa.selenium.WebElement assocPartDropdown = wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(assocPartDropdownLocator));
+    org.openqa.selenium.support.ui.Select assocPartSelect = new org.openqa.selenium.support.ui.Select(assocPartDropdown);
+    assocPartSelect.selectByVisibleText(&quot;All&quot;);
+    WDS.log.info(&quot;Selected &apos;All&apos; for Associated WT Part&quot;);
+
+    // 5. Select &quot;All&quot; in select#Download_FAMILY
+    org.openqa.selenium.By familyDropdownLocator = org.openqa.selenium.By.id(&quot;Download_FAMILY&quot;);
+    org.openqa.selenium.WebElement familyDropdown = wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(familyDropdownLocator));
+    org.openqa.selenium.support.ui.Select familySelect = new org.openqa.selenium.support.ui.Select(familyDropdown);
+    familySelect.selectByVisibleText(&quot;All&quot;);
+    WDS.log.info(&quot;Selected &apos;All&apos; for Family&quot;);
+
+    // 6. Click on OK button
+    org.openqa.selenium.By okButtonLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(text(), &apos;OK&apos;)]&quot;);
+    org.openqa.selenium.WebElement okButton = wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(okButtonLocator));
+    okButton.click();
+    WDS.log.info(&quot;Clicked on &apos;OK&apos; button&quot;);
+
+    // Mark sampler success
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Workspace and dropdowns selected, OK clicked successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.log.error(&quot;Exception in WebDriver Sampler:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Modify Objects in Workspace">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.ChromeDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig" testname="WebDriver Config (Chrome Driver Setup)" enabled="true">
+          <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
+          <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
+          <stringProp name="WebDriverConfig.driver_path">C:\Users\61988\Documents\JmeterProject\Windchill\drivers\chromedriver.exe</stringProp>
+          <boolProp name="WebDriverConfig.dev_mode">false</boolProp>
+          <boolProp name="WebDriverConfig.headless">false</boolProp>
+          <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>
+          <stringProp name="ChromeDriverConfig.additional_args"></stringProp>
+          <stringProp name="ChromeDriverConfig.binary_path"></stringProp>
+          <stringProp name="WebDriverConfig.proxy_type">SYSTEM</stringProp>
+          <stringProp name="WebDriverConfig.proxy_pac_url"></stringProp>
+          <stringProp name="WebDriverConfig.http_host"></stringProp>
+          <intProp name="WebDriverConfig.http_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_http_for_all_protocols">true</boolProp>
+          <stringProp name="WebDriverConfig.https_host"></stringProp>
+          <intProp name="WebDriverConfig.https_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_ftp_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.ftp_host"></stringProp>
+          <intProp name="WebDriverConfig.ftp_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_socks_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.socks_host"></stringProp>
+          <intProp name="WebDriverConfig.socks_port">8080</intProp>
+          <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
+          <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Login To Windchill" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Login_To_Windchill" enabled="true">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    String username = &quot;${USERNAME}&quot;;
+    String password = &quot;${PASSWORD}&quot;;
+    String baseUrl  = &quot;plmtvdr3.plmtestlab.com/Windchill/app/#ptc1/workspaces/MyWorkspace&quot;;
+    String fullUrl  = &quot;https://&quot; + username + &quot;:&quot; + password + &quot;@&quot; + baseUrl;
+
+    driver.get(fullUrl);
+    WDS.log.info(&quot;Navigated to: &quot; + fullUrl);
+
+    // Try closing popup if present
+    try {
+        org.openqa.selenium.WebElement popupClose = driver.findElement(
+            org.openqa.selenium.By.xpath(&quot;//div[contains(@class, &apos;x-window-mc&apos;)]//div[contains(@class, &apos;x-tool-close&apos;)]&quot;)
+        );
+        if (popupClose.isDisplayed()) {
+            popupClose.click();
+            WDS.log.info(&quot;Popup closed successfully.&quot;);
+        }
+    } catch (org.openqa.selenium.NoSuchElementException ignored) {
+        WDS.log.info(&quot;No popup present to close.&quot;);
+    }
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Login successful and popup handled.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.log.error(&quot;Exception during login:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Modify Objects in Workspace"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Check-Out" enabled="false">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // 1. Get workspaceName from JMeter properties and click workspace link
+    String workspaceName = (String) WDS.props.get(&quot;workspaceName&quot;);
+    WDS.log.info(&quot;Using workspaceName from global props: &quot; + workspaceName);
+
+    org.openqa.selenium.By workspaceLinkLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + workspaceName + &quot;&apos;)]&quot;);
+    org.openqa.selenium.WebElement workspaceLink = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(workspaceLinkLocator)
+    );
+    workspaceLink.click();
+    WDS.log.info(&quot;Clicked workspace link: &quot; + workspaceName);
+
+    // 2. Switch to iframe with id &apos;the_tpIFrame&apos;
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;the_tpIFrame&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;the_tpIFrame&apos;&quot;);
+
+    // 3. Click the &quot;Select All&quot; checkbox
+    org.openqa.selenium.By selectAllCheckboxLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement selectAllCheckbox = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(selectAllCheckboxLocator)
+    );
+    selectAllCheckbox.click();
+    WDS.log.info(&quot;Clicked on &apos;Select All&apos; checkbox.&quot;);
+
+    // 4. Click the &quot;Checkout&quot; button
+    org.openqa.selenium.By checkoutButtonLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(@style, &apos;images/checkout.gif&apos;)]&quot;);
+    org.openqa.selenium.WebElement checkoutButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(checkoutButtonLocator)
+    );
+    checkoutButton.click();
+    WDS.log.info(&quot;Clicked on &apos;Checkout&apos; button.&quot;);
+
+    // 5. Switch back to default content
+    driver.switchTo().defaultContent();
+    WDS.log.info(&quot;Switched back to default content&quot;);
+
+    // Mark sampler as success
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Clicked Select All and Checkout successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Check-Out">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    // Correct implicit wait usage for Selenium 4+
+    driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
+    
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+    org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+
+    // 1. Get workspaceName from JMeter properties
+    String workspaceName = (String) WDS.props.get(&quot;workspaceName&quot;);
+    if (workspaceName == null || workspaceName.isEmpty()) {
+        throw new Exception(&quot;workspaceName property is not set or is empty.&quot;);
+    }
+
+    org.openqa.selenium.By workspaceLinkLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + workspaceName + &quot;&apos;)]&quot;);
+    org.openqa.selenium.WebElement scroller = driver.findElement(org.openqa.selenium.By.xpath(&quot;(//div[@class=&apos;x-grid3-scroller&apos;])[1]&quot;));
+
+    int scrollStep = 800;
+    int maxScrollAttempts = 70;
+    boolean workspaceFound = false;
+
+    for (int i = 0; i &lt; maxScrollAttempts; i++) {
+        try {
+            org.openqa.selenium.WebElement workspaceLink = driver.findElement(workspaceLinkLocator);
+            if (workspaceLink.isDisplayed()) {
+                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(workspaceLink)).click();
+                WDS.log.info(&quot;Clicked workspace link: &quot; + workspaceName + &quot; at scroll attempt &quot; + (i + 1));
+                workspaceFound = true;
+                break;
+            }
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            // Continue scrolling
+        } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+            // Continue scrolling
+        }
+
+        js.executeScript(&quot;arguments[0].scrollTop += arguments[1];&quot;, scroller, scrollStep);
+        WDS.log.info(&quot;Scroll attempt &quot; + (i + 1) + &quot; to find workspace: &quot; + workspaceName);
+
+        Thread.sleep(200);
+    }
+
+    if (!workspaceFound) {
+        throw new Exception(&quot;Workspace &apos;&quot; + workspaceName + &quot;&apos; not found after scrolling.&quot;);
+    }
+
+    // 2. Switch to iframe with id &apos;the_tpIFrame&apos;
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;the_tpIFrame&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;the_tpIFrame&apos;&quot;);
+
+    // 3. Click the &quot;Select All&quot; checkbox
+    org.openqa.selenium.By selectAllCheckboxLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement selectAllCheckbox = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(selectAllCheckboxLocator)
+    );
+    selectAllCheckbox.click();
+    WDS.log.info(&quot;Clicked on &apos;Select All&apos; checkbox.&quot;);
+
+    // 4. Click the &quot;Checkout&quot; button
+    org.openqa.selenium.By checkoutButtonLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(@style, &apos;images/checkout.gif&apos;)]&quot;);
+    org.openqa.selenium.WebElement checkoutButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(checkoutButtonLocator)
+    );
+    checkoutButton.click();
+    WDS.log.info(&quot;Clicked on &apos;Checkout&apos; button.&quot;);
+
+    // 5. Switch back to default content
+    driver.switchTo().defaultContent();
+    WDS.log.info(&quot;Switched back to default content&quot;);
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Clicked Select All and Checkout successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception occurred:&quot;, e);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Modify Attributes">
+            <stringProp name="WebDriverSampler.script">try {
+    // Setup
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+    org.openqa.selenium.interactions.Actions actions = new org.openqa.selenium.interactions.Actions(driver);
+
+    // 1. Switch to iframe &apos;the_tpIFrame&apos;
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;the_tpIFrame&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;the_tpIFrame&apos;&quot;);
+
+    // 2. Click the &quot;Select All&quot; row checker checkbox
+    org.openqa.selenium.By rowCheckerLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement rowChecker = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(rowCheckerLocator)
+    );
+    rowChecker.click();
+    WDS.log.info(&quot;Clicked row checkbox in &apos;the_tpIFrame&apos;&quot;);
+
+    // 3. Click on Edit button inside table[@id=&apos;label2&apos;]
+    org.openqa.selenium.By editButtonLocator = org.openqa.selenium.By.xpath(&quot;//table[@id=&apos;label2&apos;]//button&quot;);
+    org.openqa.selenium.WebElement editButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(editButtonLocator)
+    );
+    editButton.click();
+    WDS.log.info(&quot;Clicked Edit button inside table with id=&apos;label2&apos;&quot;);
+
+    // 4. Click on the &quot;Attributes&quot; button
+    org.openqa.selenium.By attributesBtnLocator = org.openqa.selenium.By.xpath(&quot;//span[contains(text(), &apos;Attributes&apos;)]&quot;);
+    org.openqa.selenium.WebElement attributesBtn = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(attributesBtnLocator)
+    );
+    attributesBtn.click();
+    WDS.log.info(&quot;Clicked &apos;Attributes&apos; button&quot;);
+
+    // 5. Switch to iframe with id &apos;lbContentIframe&apos;
+    driver.switchTo().defaultContent(); // Must go back before switching to a new iframe
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;lbContentIframe&apos;&quot;);
+
+    // 6. Click &quot;Select All&quot; checkbox in lbContentIframe
+    org.openqa.selenium.By lbSelectAllLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement lbSelectAllCheckbox = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(lbSelectAllLocator)
+    );
+    Thread.sleep(300);
+    lbSelectAllCheckbox.click();
+    WDS.log.info(&quot;Clicked &apos;Select All&apos; checkbox in &apos;lbContentIframe&apos;&quot;);
+
+    // 7. Click the OK button
+    org.openqa.selenium.By okBtnLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(text(), &apos;OK&apos;)]&quot;);
+    org.openqa.selenium.WebElement okBtn = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(okBtnLocator)
+    );
+    okBtn.click();
+    WDS.log.info(&quot;Clicked &apos;OK&apos; button in &apos;lbContentIframe&apos;&quot;);
+
+    // 8. Switch back to default content (if needed for next steps)
+    driver.switchTo().defaultContent();
+    WDS.log.info(&quot;Switched back to default content&quot;);
+
+    // ✅ Mark as Success
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Attribute editing flow completed successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error during execution: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception occurred: &quot;, e);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Check-In Object">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+    org.openqa.selenium.interactions.Actions actions = new org.openqa.selenium.interactions.Actions(driver);
+
+    // 1. Switch to iframe with id &apos;the_tpIFrame&apos;
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;the_tpIFrame&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;the_tpIFrame&apos;&quot;);
+
+//    // 2. Click &quot;Select All&quot; checkbox
+//    org.openqa.selenium.By selectAllCheckboxLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+//    org.openqa.selenium.WebElement selectAllCheckbox = wait.until(
+//        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(selectAllCheckboxLocator)
+//    );
+//    selectAllCheckbox.click();
+//    WDS.log.info(&quot;Clicked &apos;Select All&apos; checkbox&quot;);
+
+    // 3. Click on check-in icon button
+    org.openqa.selenium.By checkinButtonLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(@style, &apos;images/checkin.gif&apos;)]&quot;);
+    org.openqa.selenium.WebElement checkinButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(checkinButtonLocator)
+    );
+    checkinButton.click();
+    WDS.log.info(&quot;Clicked check-in button&quot;);
+
+//    // 4. Handle alert if it appears
+//    try {
+//        org.openqa.selenium.Alert alert = wait.until(
+//            org.openqa.selenium.support.ui.ExpectedConditions.alertIsPresent()
+//        );
+//        WDS.log.warn(&quot;Alert appeared with text: &quot; + alert.getText());
+//        alert.accept(); // or alert.dismiss();
+//        WDS.sampleResult.setSuccessful(false);
+//        WDS.sampleResult.setResponseMessage(&quot;Alert handled: &quot; + alert.getText());
+//        WDS.sampleResult.setResponseCode(&quot;400&quot;);
+//        return; // exit early
+//    } catch (org.openqa.selenium.TimeoutException noAlert) {
+//        WDS.log.info(&quot;No alert appeared after check-in click&quot;);
+//    }
+
+    // 5. Switch to iframe with id &apos;lbContentIframe&apos;
+    driver.switchTo().defaultContent(); // go back to root before switching
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;lbContentIframe&apos;&quot;);
+
+    // 6. Click on checkbox inside &apos;lbContentIframe&apos;
+    org.openqa.selenium.By iframeCheckboxLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-row-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement selectAllCheckboxOnFrame = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(iframeCheckboxLocator)
+    );
+    selectAllCheckboxOnFrame.click();
+    WDS.log.info(&quot;Clicked checkbox inside &apos;lbContentIframe&apos;&quot;);
+
+    // 7. Click finish button inside &apos;lbContentIframe&apos;
+    org.openqa.selenium.By finishBtnLocator = org.openqa.selenium.By.xpath(&quot;//u[contains(text(), &apos;F&apos;)]&quot;);
+    org.openqa.selenium.WebElement finishBtn = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(finishBtnLocator)
+    );
+    finishBtn.click();
+    WDS.log.info(&quot;Clicked finish button inside &apos;lbContentIframe&apos;&quot;);
+
+    // 8. Switch back to default content
+    driver.switchTo().defaultContent();
+    WDS.log.info(&quot;Switched back to default content&quot;);
+
+    // ✅ Success
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Workflow completed successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception occurred: &quot;, e);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Deleting data Form Windchill">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.ChromeDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig" testname="WebDriver Config (Chrome Driver Setup)" enabled="true">
+          <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
+          <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
+          <stringProp name="WebDriverConfig.driver_path">C:\Users\61988\Documents\JmeterProject\Windchill\drivers\chromedriver.exe</stringProp>
+          <boolProp name="WebDriverConfig.dev_mode">false</boolProp>
+          <boolProp name="WebDriverConfig.headless">false</boolProp>
+          <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>
+          <stringProp name="ChromeDriverConfig.additional_args"></stringProp>
+          <stringProp name="ChromeDriverConfig.binary_path"></stringProp>
+          <stringProp name="WebDriverConfig.proxy_type">SYSTEM</stringProp>
+          <stringProp name="WebDriverConfig.proxy_pac_url"></stringProp>
+          <stringProp name="WebDriverConfig.http_host"></stringProp>
+          <intProp name="WebDriverConfig.http_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_http_for_all_protocols">true</boolProp>
+          <stringProp name="WebDriverConfig.https_host"></stringProp>
+          <intProp name="WebDriverConfig.https_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_ftp_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.ftp_host"></stringProp>
+          <intProp name="WebDriverConfig.ftp_port">8080</intProp>
+          <boolProp name="WebDriverConfig.use_socks_proxy">true</boolProp>
+          <stringProp name="WebDriverConfig.socks_host"></stringProp>
+          <intProp name="WebDriverConfig.socks_port">8080</intProp>
+          <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
+          <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.config.ChromeDriverConfig>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Login To Windchill" enabled="true"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Login_To_Windchill">
+            <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+
+    // Set implicit wait
+    driver.manage().timeouts().implicitlyWait(10, java.util.concurrent.TimeUnit.SECONDS);
+
+    String username = &quot;${USERNAME}&quot;;
+    String password = &quot;${PASSWORD}&quot;;
+    String baseUrl  = &quot;plmtvdr3.plmtestlab.com/Windchill/app/#ptc1/workspaces/MyWorkspace&quot;;
+    String fullUrl  = &quot;https://&quot; + username + &quot;:&quot; + password + &quot;@&quot; + baseUrl;
+
+    driver.get(fullUrl);
+    WDS.log.info(&quot;Navigated to: &quot; + fullUrl);
+
+    // Try closing popup if present
+    try {
+        org.openqa.selenium.WebElement popupClose = driver.findElement(
+            org.openqa.selenium.By.xpath(&quot;//div[contains(@class, &apos;x-window-mc&apos;)]//div[contains(@class, &apos;x-tool-close&apos;)]&quot;)
+        );
+        if (popupClose.isDisplayed()) {
+            popupClose.click();
+            WDS.log.info(&quot;Popup closed successfully.&quot;);
+        }
+    } catch (org.openqa.selenium.NoSuchElementException ignored) {
+        WDS.log.info(&quot;No popup present to close.&quot;);
+    }
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Login successful and popup handled.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    String fullStackTrace = sw.toString();
+
+    WDS.log.error(&quot;Exception during login:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Exception:\n&quot; + fullStackTrace);
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Deleting data Form Windchill"/>
+        <hashTree>
+          <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Cleanup Workspace" enabled="false">
+            <stringProp name="WebDriverSampler.script">try {
+    // Setup WebDriver and Wait
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+    org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+
+    // 1. Get workspaceName from JMeter properties
+    String workspaceName = (String) WDS.props.get(&quot;workspaceName&quot;);
+    if (workspaceName == null || workspaceName.isEmpty()) {
+        throw new Exception(&quot;workspaceName property is not set or is empty.&quot;);
+    }
+    WDS.log.info(&quot;Using workspaceName from global props: &quot; + workspaceName);
+
+    org.openqa.selenium.By workspaceLinkLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + workspaceName + &quot;&apos;)]&quot;);
+    org.openqa.selenium.WebElement scroller = driver.findElement(org.openqa.selenium.By.xpath(&quot;(//div[@class=&apos;x-grid3-scroller&apos;])[1]&quot;));
+
+    int scrollStep = 800;
+    int maxScrollAttempts = 70;
+    boolean workspaceFound = false;
+
+    for (int i = 0; i &lt; maxScrollAttempts; i++) {
+        try {
+            org.openqa.selenium.WebElement workspaceLink = driver.findElement(workspaceLinkLocator);
+            if (workspaceLink.isDisplayed()) {
+                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(workspaceLink)).click();
+                WDS.log.info(&quot;Clicked workspace link: &quot; + workspaceName + &quot; at scroll attempt &quot; + (i + 1));
+                workspaceFound = true;
+                break;
+            }
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            // Element not found yet — continue scrolling
+        } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+            // Element might be overlapped — continue scrolling
+        }
+
+        // Scroll the container
+        js.executeScript(&quot;arguments[0].scrollTop += arguments[1];&quot;, scroller, scrollStep);
+        WDS.log.info(&quot;Scroll attempt &quot; + (i + 1) + &quot; to find workspace: &quot; + workspaceName);
+        Thread.sleep(200);
+    }
+
+    if (!workspaceFound) {
+        throw new Exception(&quot;Workspace &apos;&quot; + workspaceName + &quot;&apos; not found after scrolling.&quot;);
+    }
+
+    // 2. Switch to iframe with id &apos;the_tpIFrame&apos;
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;the_tpIFrame&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;the_tpIFrame&apos;&quot;);
+
+    // 3. Click the &quot;Select All&quot; checkbox
+    org.openqa.selenium.By selectAllCheckboxLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement selectAllCheckbox = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(selectAllCheckboxLocator)
+    );
+    selectAllCheckbox.click();
+    WDS.log.info(&quot;Clicked &apos;Select All&apos; checkbox&quot;);
+
+    // 4. Click the &quot;Remove&quot; button
+    org.openqa.selenium.By removeButtonLocator = org.openqa.selenium.By.xpath(&quot;//button[contains(@style, &apos;images/remove16&apos;)]&quot;);
+    org.openqa.selenium.WebElement removeButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(removeButtonLocator)
+    );
+    removeButton.click();
+    WDS.log.info(&quot;Clicked &apos;Remove&apos; button&quot;);
+
+    // 5. Switch to &apos;lbContentIframe&apos;
+    driver.switchTo().defaultContent();
+    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(&quot;lbContentIframe&quot;));
+    WDS.log.info(&quot;Switched to iframe &apos;lbContentIframe&apos;&quot;);
+
+    // 6. Click the &quot;Select All&quot; checkbox inside lbContentIframe
+    org.openqa.selenium.By lbSelectAllLocator = org.openqa.selenium.By.xpath(&quot;//div[@class=&apos;x-grid3-hd-checker&apos;]&quot;);
+    org.openqa.selenium.WebElement lbSelectAll = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(lbSelectAllLocator)
+    );
+    lbSelectAll.click();
+    WDS.log.info(&quot;Clicked &apos;Select All&apos; checkbox in &apos;lbContentIframe&apos;&quot;);
+
+    // 7. Click the OK button inside table with id &apos;okbutton&apos;
+    org.openqa.selenium.By okButtonLocator = org.openqa.selenium.By.xpath(&quot;//table[@id=&apos;okbutton&apos;]//button&quot;);
+    org.openqa.selenium.WebElement okButton = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(okButtonLocator)
+    );
+    okButton.click();
+    WDS.log.info(&quot;Clicked OK button inside &apos;okbutton&apos; table&quot;);
+
+    // 8. Switch back to default content
+    driver.switchTo().defaultContent();
+    WDS.log.info(&quot;Switched back to default content&quot;);
+
+    // Mark as Success
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Remove flow completed successfully.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error during execution: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception occurred: &quot;, e);
+}
+</stringProp>
+            <stringProp name="WebDriverSampler.parameters"></stringProp>
+            <stringProp name="WebDriverSampler.language">java</stringProp>
+          </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Delete Objects"/>
+          <hashTree>
+            <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Goto Product page &amp; Select Folder">
+              <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
+
+    // WebDriverWait
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    // STEP 2: Click &quot;Goto Browse&quot;
+    org.openqa.selenium.WebElement browseLink = driver.findElement(org.openqa.selenium.By.xpath(&quot;//a[@id=&apos;object_main_navigation_nav&apos;]&quot;));
+    Thread.sleep(200);
+    browseLink.click();
+    WDS.log.info(&quot;Clicked &apos;Goto Browse&apos; link&quot;);
+
+    // STEP 3: Click Recent Product icon
+    org.openqa.selenium.WebElement recentProductIcon = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+            org.openqa.selenium.By.xpath(&quot;//span[contains(@class, &apos;productNavigation-icon&apos;)]&quot;)
+        )
+    );
+    recentProductIcon.click();
+    WDS.log.info(&quot;Clicked Recent Product icon&quot;);
+
+    // STEP 4: Click &quot;View All&quot;
+    org.openqa.selenium.WebElement viewAllLink = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+            org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;View All&apos;)]&quot;)
+        )
+    );
+    viewAllLink.click();
+    WDS.log.info(&quot;Clicked &apos;View All&apos; link&quot;);
+    Thread.sleep(1000);
+
+    // STEP 5: Click product name or search it
+    String productName = &quot;${PRODUCTNAME}&quot;;
+    org.openqa.selenium.By productLinkLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + productName + &quot;&apos;)]&quot;);
+    try {
+        org.openqa.selenium.WebElement productLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(productLinkLocator)
+        );
+        productLink.click();
+        WDS.log.info(&quot;Product &apos;&quot; + productName + &quot;&apos; found and clicked.&quot;);
+    } catch (org.openqa.selenium.TimeoutException e) {
+        org.openqa.selenium.WebElement searchBox = driver.findElement(
+            org.openqa.selenium.By.id(&quot;netmarkets.product.list.searchInListTextBox&quot;)
+        );
+        searchBox.click();
+
+        // Inject value using JavaScript
+        org.openqa.selenium.JavascriptExecutor jsExecutor = ((org.openqa.selenium.JavascriptExecutor) driver);
+        Object[] args = new Object[1];
+        args[0] = searchBox;
+        jsExecutor.executeScript(&quot;arguments[0].value=&apos;&quot; + productName + &quot;&apos;;&quot;, args);
+        WDS.log.info(&quot;&apos;&quot; + productName + &quot;&apos; injected into product search box.&quot;);
+
+        org.openqa.selenium.WebElement searchIcon = driver.findElement(
+            org.openqa.selenium.By.xpath(&quot;//img[@class=&apos;x-formtrigger -x-form-search-trigger&apos;]&quot;)
+        );
+        searchIcon.click();
+
+        org.openqa.selenium.WebElement searchedProductLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(productLinkLocator)
+        );
+        searchedProductLink.click();
+        WDS.log.info(&quot;Product &apos;&quot; + productName + &quot;&apos; searched and clicked.&quot;);
+    }
+
+    // STEP 6: Navigate to folder (with stale element retry - Option 1)
+    String folderName = &quot;${FOLDERNAME}&quot;;
+    org.openqa.selenium.By folderLocator = org.openqa.selenium.By.xpath(&quot;//a[contains(text(), &apos;&quot; + folderName + &quot;&apos;)]&quot;);
+    try {
+        org.openqa.selenium.WebElement folderLink = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(folderLocator)
+        );
+        folderLink.click();
+        WDS.log.info(&quot;Clicked on folder: &quot; + folderName);
+    } catch (org.openqa.selenium.StaleElementReferenceException staleEx) {
+        WDS.log.info(&quot;Caught stale element. Re-finding folder link and retrying click...&quot;);
+        org.openqa.selenium.WebElement folderLinkRetry = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(folderLocator)
+        );
+        folderLinkRetry.click();
+        WDS.log.info(&quot;Retried and clicked on folder: &quot; + folderName);
+    }
+
+    // STEP 6.1: Confirm active folder is Autotest2
+    Thread.sleep(200);
+    org.openqa.selenium.WebElement activeFolderName = wait.until(
+        org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+            org.openqa.selenium.By.xpath(&quot;//span[@id=&apos;infoPageIdentityObjectIdentifier&apos;]&quot;)
+        )
+    );
+    String currentFolder = activeFolderName.getText().trim();
+    WDS.log.info(&quot;Current active folder: &apos;&quot; + currentFolder + &quot;&apos;&quot;);
+
+    if (currentFolder.equalsIgnoreCase(&quot;Autotest2&quot;)) {
+        WDS.log.info(&quot;Confirmed folder is &apos;Autotest2&apos;. Proceeding to check filter input value.&quot;);
+
+        // STEP 6.2: Get filter input field
+        org.openqa.selenium.WebElement filterInput = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
+                org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;folderbrowser_PDMfilterSelect&apos;]&quot;)
+            )
+        );
+        String filterValue = filterInput.getAttribute(&quot;value&quot;).trim();
+        WDS.log.info(&quot;Filter input value: &apos;&quot; + filterValue + &quot;&apos;&quot;);
+
+        if (filterValue.equalsIgnoreCase(&quot;All&quot;)) {
+            WDS.log.info(&quot;Filter already set to &apos;All&apos;. Skipping dropdown interaction.&quot;);
+        } else {
+            // STEP 7: Click the dropdown image
+            org.openqa.selenium.WebElement filterDropdownArrow = wait.until(
+                org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+                    org.openqa.selenium.By.xpath(&quot;//input[@id=&apos;folderbrowser_PDMfilterSelect&apos;]/following-sibling::img&quot;)
+                )
+            );
+            filterDropdownArrow.click();
+            WDS.log.info(&quot;Clicked filter dropdown arrow.&quot;);
+
+            // STEP 8: Click on &apos;All&apos;
+            org.openqa.selenium.WebElement allOption = wait.until(
+                org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+                    org.openqa.selenium.By.xpath(&quot;//div[normalize-space(text())=&apos;All&apos;]&quot;)
+                )
+            );
+            allOption.click();
+            WDS.log.info(&quot;Clicked &apos;All&apos; from dropdown.&quot;);
+        }
+
+    } else {
+        WDS.log.info(&quot;Current folder is NOT &apos;Autotest2&apos;. Skipping filter steps.&quot;);
+        WDS.sampleResult.setSuccessful(false);
+        WDS.sampleResult.setResponseMessage(&quot;Test failed: Expected folder &apos;Autotest2&apos;, but found &apos;&quot; + currentFolder + &quot;&apos;.&quot;);
+        WDS.sampleResult.setResponseCode(&quot;400&quot;);
+        return;
+    }
+
+    // All steps successful
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Navigation completed including filter check.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error during navigation: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception during navigation: &quot;, e);
+}
+</stringProp>
+              <stringProp name="WebDriverSampler.parameters"></stringProp>
+              <stringProp name="WebDriverSampler.language">java</stringProp>
+            </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="Delete Objects Form Windchill">
+              <stringProp name="WebDriverSampler.script">try {
+    driver = WDS.browser;
+    driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
+
+    org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+    String fullPartName = WDS.props.get(&quot;UpdatedPartName&quot;);  // e.g. &quot;Test01_920&quot;
+    WDS.log.info(&quot;Full part name: &quot; + fullPartName);
+
+    String suffix = &quot;&quot;;
+    if (fullPartName != null &amp;&amp; fullPartName.contains(&quot;_&quot;)) {
+        suffix = fullPartName.substring(fullPartName.indexOf(&quot;_&quot;));  // &quot;_920&quot;
+    }
+    WDS.log.info(&quot;Extracted suffix: &quot; + suffix);
+
+    // XPath to locate checkboxes
+    String baseXpath = &quot;//a[contains(text(), &apos;&quot; + suffix + &quot;&apos;)]&quot; +
+                       &quot;/parent::div/parent::td/preceding-sibling::td[contains(@class, &apos;x-grid3-td-checker&apos;)]&quot; +
+                       &quot;/div/div[@class = &apos;x-grid3-row-checker&apos;]&quot;;
+
+    // Find matching checkboxes
+    java.util.List checkboxes = driver.findElements(org.openqa.selenium.By.xpath(baseXpath));
+    int count = checkboxes.size();
+    WDS.log.info(&quot;Total checkboxes found: &quot; + count);
+
+    for (int i = 1; i &lt;= count; i++) {
+        String indexedXpath = &quot;(&quot; + baseXpath + &quot;)[&quot; + i + &quot;]&quot;;
+        try {
+            org.openqa.selenium.WebElement checkbox = wait.until(
+                org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(
+                    org.openqa.selenium.By.xpath(indexedXpath)
+                )
+            );
+            checkbox.click();
+            WDS.log.info(&quot;Clicked checkbox at index &quot; + i);
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            WDS.log.warn(&quot;Stale element at index &quot; + i + &quot;, skipping.&quot;);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            WDS.log.warn(&quot;Timeout waiting for checkbox at index &quot; + i + &quot;, skipping.&quot;);
+        } catch (Exception e) {
+            WDS.log.warn(&quot;Error clicking checkbox at index &quot; + i + &quot;: &quot; + e.getMessage());
+        }
+    }
+
+    // Click &quot;Actions&quot; button
+    try {
+        org.openqa.selenium.By actionsButton = org.openqa.selenium.By.xpath(&quot;(//button[contains(text(), &apos;Actions&apos;)])[1]&quot;);
+        org.openqa.selenium.WebElement actions = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(actionsButton)
+        );
+        actions.click();
+        WDS.log.info(&quot;Clicked &apos;Actions&apos; button.&quot;);
+    } catch (Exception e) {
+        WDS.log.warn(&quot;Failed to click &apos;Actions&apos; button: &quot; + e.getMessage());
+    }
+
+    // Click &quot;Delete&quot; option
+    try {
+        org.openqa.selenium.By deleteButton = org.openqa.selenium.By.xpath(&quot;//span[contains(text(), &apos;Delete&apos;)]&quot;);
+        org.openqa.selenium.WebElement delete = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(deleteButton)
+        );
+        delete.click();
+        WDS.log.info(&quot;Clicked &apos;Delete&apos; button.&quot;);
+    } catch (Exception e) {
+        WDS.log.warn(&quot;Failed to click &apos;Delete&apos; button: &quot; + e.getMessage());
+    }
+
+    // ✅ Accept JavaScript Alert
+    try {
+        org.openqa.selenium.Alert alert = wait.until(
+            org.openqa.selenium.support.ui.ExpectedConditions.alertIsPresent()
+        );
+        String alertText = alert.getText();
+        WDS.log.info(&quot;Alert appeared with text: &quot; + alertText);
+        alert.accept();  // Click &quot;OK&quot;
+        WDS.log.info(&quot;Alert accepted.&quot;);
+    } catch (Exception e) {
+        WDS.log.warn(&quot;No alert to accept or error while accepting: &quot; + e.getMessage());
+    }
+
+    WDS.sampleResult.setSuccessful(true);
+    WDS.sampleResult.setResponseMessage(&quot;Checked &quot; + count + &quot; items and confirmed delete.&quot;);
+    WDS.sampleResult.setResponseCodeOK();
+
+} catch (Throwable e) {
+    WDS.sampleResult.setSuccessful(false);
+    WDS.sampleResult.setResponseMessage(&quot;Error: &quot; + e.getMessage());
+    WDS.sampleResult.setResponseCode(&quot;500&quot;);
+    WDS.log.error(&quot;Exception:&quot;, e);
+}
+</stringProp>
+              <stringProp name="WebDriverSampler.parameters"></stringProp>
+              <stringProp name="WebDriverSampler.language">java</stringProp>
+            </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="ComparisonVisualizer" testclass="ResultCollector" testname="Comparison Assertion Visualizer">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
